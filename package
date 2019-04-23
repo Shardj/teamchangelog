@@ -1,0 +1,111 @@
+#!/bin/bash
+
+# Usage info
+show_help() {
+cat << EOF
+Usage: [-hf] [-v <git tag>]
+
+Parameter details:
+	-h display help and exit
+	-f force git tag creation
+	-v git tag, checkout release tag specified
+EOF
+}
+
+# Initialise variables
+
+OPTIND=1 # Reset for previous uses of getops in shell
+OPTSTRING="fv:"
+gitTag=false
+force=false
+libraryDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # directory the script is inside
+yamlfile="$libraryDir/teamchangelog.yaml"
+
+while getopts "$OPTSTRING" opt; do
+	case "$opt" in
+	h)
+		show_help
+		exit 0
+		;;
+	f)
+		force=true
+		;;
+	v)
+		gitTag=$OPTARG
+		;;
+	*)
+		show_help >&2
+		exit 1
+		;;
+	esac
+done
+
+function parse_yaml {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\):|\1|" \
+        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
+
+if [[ -f "$yamlfile" ]]; then
+	parse_yaml "$yamlfile"
+else
+	echo "$yamlfile not found"
+	exit 1
+fi
+
+# Validation
+
+if [[ ! $gitTag =~ $tag_validation_regex ]]; then
+    echo "Invalid tag supplied must match $tag_validation_regex"
+    exit 1
+fi
+
+if [[ force == false ]] && [[ git rev-parse "$TAG" >/dev/null 2>&1 ]]; then
+	echo "tag already exists"
+	exit 1
+fi
+
+if [[! -f "$changelog_file_path" ]]; then
+	echo "$changelog_file_path is not a file"
+fi
+
+if [[! -d "$unreleased_changes_directory_path" ]]; then
+	echo "$unreleased_changes_directory_path is not a directory"
+fi
+
+if [[ "$(ls -1A "$unpackaged_changes_directory_path" | wc -l)" == 0 ]]; then
+	echo "changes directory is empty"
+	exit 1
+fi
+
+# Append tag and date to changelog
+echo "Tag: $gitTag. Packaged on: $(date) "$'\n' >> "$changelog_file_path"
+
+# Iterate over files by globbing
+for filename in "$unreleased_changes_directory_path*"; do
+    [ -e "$filename" ] || continue # avoid glob not matching
+    
+    echo "$filename - " >> "$changelog_file_path"
+    cat "$filename" >> "$changelog_file_path"
+    echo $'\n' >> "$changelog_file_path"
+done
+
+# Remove files in $unreleased_changes_directory_path as they're now in the changelog
+
+# Tag creation
+if [[ force == true ]]; then
+	git tag -f "$gitTag"
+else
+	git tag "$gitTag"
+fi

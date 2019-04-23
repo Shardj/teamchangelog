@@ -1,0 +1,9 @@
+# paths relative to library directory
+unreleased_changes_directory_path: changes/
+changelog_file_path: changelog
+# the tag provided during packaging must match the provided regex.
+# This one matches 2 to 4 numbers of any number of digits seperated by periods. For example "22.5.1.0" or "0.123"
+tag_validation_regex: ([0-9]+\.){1,3}[0-9]+
+branch:
+  development: develop # the development branch which this script should be run from
+  production: master # the production branch to merge into and create tag from
