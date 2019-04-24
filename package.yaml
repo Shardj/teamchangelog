@@ -1,4 +1,4 @@
-# paths relative to library directory
+# paths relative to library directory or absolute if starting with /
 unreleased_changes_directory_path: changes/
 changelog_file_path: changelog
 # the tag provided during packaging must match the provided regex.
