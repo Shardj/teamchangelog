@@ -4,7 +4,7 @@ The conventional changelog faces many issues for larger products or teams:
 - You manually need to edit the file and change [unreleased] to [{new release tag}] and or add to the new tag manually.
 
 # Functionality
-1. Instead of adding to your changelog directly when a ticket is in progress you should create a file named after the ticket under the changes directory, the path for which you set in the package.yaml file.
+1. Instead of adding to your changelog directly when a ticket is in progress you should create a file named after the ticket under the changes directory. The path for your changes directory and your changelog should be set in your package.yaml file.
 2. Changes that need to be added to your changelog can simply be added to your newly created ticket file from the previous step.
 3. When you're ready for deployment simply run the package bash file, use -v to specify the tag to add the changes under in your changelog
 4. `./package -h` to see additional functionality
