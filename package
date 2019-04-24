@@ -6,9 +6,9 @@ cat << EOF
 Usage: [-hf] [-v <git tag>]
 
 Parameter details:
-	-h display help and exit
-	-f force git tag creation
-	-v git tag, checkout release tag specified
+    -h display help and exit
+    -f force git tag creation
+    -v git tag, checkout release tag specified
 EOF
 }
 
@@ -23,51 +23,51 @@ startDir="$(pwd)"
 yamlfile="$libraryDir/teamchangelog.yaml"
 
 while getopts "$OPTSTRING" opt; do
-	case "$opt" in
-	h)
-		show_help
-		exit 0
-		;;
-	f)
-		force=true
-		;;
-	v)
-		gitTag=$OPTARG
-		;;
-	*)
-		show_help >&2
-		exit 1
-		;;
-	esac
+    case "$opt" in
+    h)
+        show_help
+        exit 0
+        ;;
+    f)
+        force=true
+        ;;
+    v)
+        gitTag=$OPTARG
+        ;;
+    *)
+        show_help >&2
+        exit 1
+        ;;
+    esac
 done
 
 function parse_yaml {
-   local prefix=$2
-   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
-   sed -ne "s|^\($s\):|\1|" \
+    local prefix=$2
+    local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+    sed -ne "s|^\($s\):|\1|" \
         -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
         -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
-   awk -F$fs '{
-      indent = length($1)/2;
-      vname[indent] = $2;
-      for (i in vname) {if (i > indent) {delete vname[i]}}
-      if (length($3) > 0) {
+    awk -F$fs '{
+        indent = length($1)/2;
+        vname[indent] = $2;
+        for (i in vname) {if (i > indent) {delete vname[i]}}
+        if (length($3) > 0) {
          vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
          printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
-      }
-   }'
+        }
+    }'
 }
 
 function prepend_text_to_file {
-	echo -e "$1$(cat $2)" > $2
+    echo -e "$1$(cat $2)" > $2
 }
 
 if [[ -f "$yamlfile" ]]; then
-	# takes values from yaml file and converts them into bash variables
-	eval $(parse_yaml "$yamlfile")
+    # takes values from yaml file and converts them into bash variables
+    eval $(parse_yaml "$yamlfile")
 else
-	echo "$yamlfile not found"
-	exit 1
+    echo "$yamlfile not found"
+    exit 1
 fi
 
 # Validation
@@ -79,8 +79,8 @@ fi
 
 # if tag already exists and we aren't going to force tag creation
 if git rev-parse "$gitTag" >/dev/null 2>&1 && [[ "$force" == false ]]; then
-	echo "tag already exists"
-	exit 1
+    echo "tag already exists"
+    exit 1
 fi
 
 # Move into this bash files directory so that both relative and absolute paths found in the yaml file work
@@ -89,39 +89,39 @@ fi
 cd "$libraryDir"
 
 if [[ ! -f "$changelog_file_path" ]]; then
-	echo "$changelog_file_path is not a file"
+    echo "$changelog_file_path is not a file"
 fi
 
 if [[ ! -d "$unreleased_changes_directory_path" ]]; then
-	echo "$unreleased_changes_directory_path is not a directory"
+    echo "$unreleased_changes_directory_path is not a directory"
 fi
 
 if [[ "$(ls -1A "$unreleased_changes_directory_path" | wc -l)" == 0 ]]; then
-	echo "changes directory is empty"
-	exit 1
+    echo "changes directory is empty"
+    exit 1
 fi
 
 # Append tag and date to changelog
 echo "Adding to $changelog_file_path"
 
-newChange="# Tag: $gitTag	Packaged on: $(date)\n"
+newChange="# Tag: $gitTag    Packaged on: $(date)\n"
 
 # Iterate over files by globbing
 for filepath in "$unreleased_changes_directory_path"*; do
-	# avoid glob not matching
+    # avoid glob not matching
     [ -e "$filepath" ] || continue
 
     # read file line by line
     # -r prevents backslash escapes from being interpreted.
-	# || [[ -n $line ]] prevents the last line from being ignored if it doesn't end with a \n (since read returns a non-zero
-	# exit code when it encounters EOF).
+    # || [[ -n $line ]] prevents the last line from being ignored if it doesn't end with a \n (since read returns a non-zero
+    # exit code when it encounters EOF).
     while read -r line || [[ -n "$line" ]]; do
 
-	    # strips directory path prefix off of path to file to leave only the filepath
-	    trueFilename=${filepath#"$unreleased_changes_directory_path"}
-	    # add to newChange
-	    newChange="$newChange$trueFilename - $line\n"
-	done < "$filepath"
+        # strips directory path prefix off of path to file to leave only the filepath
+        trueFilename=${filepath#"$unreleased_changes_directory_path"}
+        # add to newChange
+        newChange="$newChange$trueFilename - $line\n"
+    done < "$filepath"
 done
 newChange="$newChange\n"
 
@@ -136,9 +136,9 @@ cd "$startDir"
 
 # Tag creation
 if [[ $force == true ]]; then
-	echo "Force creating tag $gitTag"
-	git tag -f "$gitTag"
+    echo "Force creating tag $gitTag"
+    git tag -f "$gitTag"
 else
-	echo "Creating tag $gitTag"
-	git tag "$gitTag"
+    echo "Creating tag $gitTag"
+    git tag "$gitTag"
 fi
