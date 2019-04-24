@@ -11,10 +11,12 @@ The conventional changelog faces many issues for larger products or teams:
 
 # Example
 Example changelog in current state:
+
     # Tag: 14.4.0	Packaged on: Wed 24 Apr 10:16:03 BST 2019
     TM-85 - fixed a bug
 	
 And you have the change "foo bar" under ticket file "TM-86" in your changes directory. Running `./package -v 14.4.1` results in that ticket file being deleted and your changelog looking like:
+
     # Tag: 14.4.1	Packaged on: Wed 24 Apr 12:35:10 BST 2019
     TM-86 - foo bar
 	
