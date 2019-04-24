@@ -19,8 +19,8 @@ OPTSTRING="fv:"
 gitTag=false
 force=false
 libraryDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # directory the script is inside
-startDir="$(pwd)"
-yamlfile="$libraryDir/package.yaml"
+cd "$libraryDir"
+yamlfile="package.yaml"
 
 while getopts "$OPTSTRING" opt; do
     case "$opt" in
@@ -71,6 +71,8 @@ else
 fi
 
 # Validation
+# we move into project file path for git commands
+cd "$project_file_path"
 
 if [[ ! "$gitTag" =~ $tag_validation_regex ]]; then
     echo "Invalid tag supplied must match $tag_validation_regex"
@@ -83,9 +85,6 @@ if git rev-parse "$gitTag" >/dev/null 2>&1 && [[ "$force" == false ]]; then
     exit 1
 fi
 
-# Move into this bash files directory so that both relative and absolute paths found in the yaml file work
-# We didn't move earlier on because we assume the git project the above git commands are looking at is local
-# to where the script was called from
 cd "$libraryDir"
 
 if [[ ! -f "$changelog_file_path" ]]; then
@@ -131,10 +130,8 @@ prepend_text_to_file "$newChange" "$changelog_file_path"
 echo "Removing files matching $unreleased_changes_directory_path*"
 rm -rf "$unreleased_changes_directory_path"*
 
-# Move back into the starting dir as it's assumed the git project is local to where the script was called from
-cd "$startDir"
-
 # Tag creation
+cd "$project_file_path"
 if [[ $force == true ]]; then
     echo "Force creating tag $gitTag"
     git tag -f "$gitTag"
