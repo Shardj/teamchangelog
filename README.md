@@ -8,7 +8,7 @@ The conventional changelog faces many issues for larger products or teams:
 1. Instead of adding to your changelog directly when a ticket is in progress you should create a file named after the ticket under the changes directory. The path for your changes directory and your changelog should be set in your package.yaml file.
 2. Changes that need to be added to your changelog can simply be added to your newly created ticket file from the previous step.
 3. When you're ready for deployment simply run the package bash file, use -v to specify the tag to add the changes under in your changelog.
-4. Your changelog file will now have the new tag with the changes you wrote to ticket files, a git tag will also have been created
+4. Your changelog file will now have the new tag with the changes you wrote to ticket files, a git tag will also have been created.
 5. `./package -h` to see additional functionality.
 
 ### Notable functionality you may trip up on
@@ -18,7 +18,7 @@ The conventional changelog faces many issues for larger products or teams:
 
 # Examples
 ### Live example:
-I have included an example changelog, example changes directory, and example unreleased change (in the changes directory). If you clone this repo and run `./package -v 1.0` you'll be able to clearly see what's happening from `git diff`, `git status` and `git tag`.
+I have included an example changelog, example changes directory, and example unreleased change (in the changes directory). If you clone this repo and run `teamchangelog/package -v 1.0` you'll be able to clearly see what's happening from `git diff`, `git status` and `git tag`.
 
 ### Written example:
 Example changelog's current state:
