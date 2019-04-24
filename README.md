@@ -1,6 +1,6 @@
 # Why
 The conventional changelog faces many issues for larger products or teams:
-- Git conflicts when adding to a standard changelog many people are working on with diverging branches.
+- Git conflicts when adding to a standard changelog many people are working on, especially common with diverging branches being used.
 - You manually need to edit the file and change [unreleased] to [{new release tag}] and or add to the new tag manually.
 
 # Functionality
