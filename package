@@ -20,7 +20,7 @@ gitTag=false
 force=false
 libraryDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # directory the script is inside
 startDir="$(pwd)"
-yamlfile="$libraryDir/teamchangelog.yaml"
+yamlfile="$libraryDir/package.yaml"
 
 while getopts "$OPTSTRING" opt; do
     case "$opt" in
