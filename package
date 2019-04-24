@@ -57,8 +57,13 @@ function parse_yaml {
    }'
 }
 
+function prepend_text_to_file {
+	echo -e "$1$(cat $2)" > $2
+}
+
 if [[ -f "$yamlfile" ]]; then
-	parse_yaml "$yamlfile"
+	# takes values from yaml file and converts them into bash variables
+	eval $(parse_yaml "$yamlfile")
 else
 	echo "$yamlfile not found"
 	exit 1
@@ -66,46 +71,57 @@ fi
 
 # Validation
 
-if [[ ! $gitTag =~ $tag_validation_regex ]]; then
+if [[ ! "$gitTag" =~ $tag_validation_regex ]]; then
     echo "Invalid tag supplied must match $tag_validation_regex"
     exit 1
 fi
 
-if [[ force == false ]] && [[ git rev-parse "$TAG" >/dev/null 2>&1 ]]; then
+# if tag already exists and we aren't going to force tag creation
+if git rev-parse "$gitTag" >/dev/null 2>&1 && [[ "$force" == false ]]; then
 	echo "tag already exists"
 	exit 1
 fi
 
-if [[! -f "$changelog_file_path" ]]; then
+if [[ ! -f "$changelog_file_path" ]]; then
 	echo "$changelog_file_path is not a file"
 fi
 
-if [[! -d "$unreleased_changes_directory_path" ]]; then
+if [[ ! -d "$unreleased_changes_directory_path" ]]; then
 	echo "$unreleased_changes_directory_path is not a directory"
 fi
 
-if [[ "$(ls -1A "$unpackaged_changes_directory_path" | wc -l)" == 0 ]]; then
+if [[ "$(ls -1A "$unreleased_changes_directory_path" | wc -l)" == 0 ]]; then
 	echo "changes directory is empty"
 	exit 1
 fi
 
 # Append tag and date to changelog
-echo "Tag: $gitTag. Packaged on: $(date) "$'\n' >> "$changelog_file_path"
+echo "Adding to $changelog_file_path"
+
+newChange="# Tag: $gitTag	Packaged on: $(date)\n"
 
 # Iterate over files by globbing
-for filename in "$unreleased_changes_directory_path*"; do
-    [ -e "$filename" ] || continue # avoid glob not matching
-    
-    echo "$filename - " >> "$changelog_file_path"
-    cat "$filename" >> "$changelog_file_path"
-    echo $'\n' >> "$changelog_file_path"
+for filepath in "$unreleased_changes_directory_path"*; do
+    [ -e "$filepath" ] || continue # avoid glob not matching
+
+    # strips directory path prefix off of path to file to leave only the filepath
+    trueFilename=${filepath#"$unreleased_changes_directory_path"}
+
+    newChange="$newChange$trueFilename - $(cat "$filepath")\n"
 done
+newChange="$newChange\n"
+
+prepend_text_to_file "$newChange" "$changelog_file_path"
 
 # Remove files in $unreleased_changes_directory_path as they're now in the changelog
+echo "Removing files matching $unreleased_changes_directory_path*"
+rm -rf "$unreleased_changes_directory_path"*
 
 # Tag creation
-if [[ force == true ]]; then
+if [[ $force == true ]]; then
+	echo "Force creating tag $gitTag"
 	git tag -f "$gitTag"
 else
+	echo "Creating tag $gitTag"
 	git tag "$gitTag"
 fi
