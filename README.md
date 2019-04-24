@@ -15,7 +15,7 @@ The conventional changelog faces many issues for larger products or teams:
 - Paths in the yaml file are absolute if starting with / otherwise they're relative to the directory the yaml file is kept in.
 - The yaml file must be in the same directory as the bash file.
 
-# Example
+# Examples
 ### Live example:
 I have included an example changelog, example changes directory, and example unreleased change (in the changes directory). If you clone this repo and run `./package -v 1.0` you'll be able to clearly see what's happening from git diff.
 
