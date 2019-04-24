@@ -28,6 +28,6 @@ If you have any suggestions or changes feel free to open issues or PR's.
 
 Currently this is written in bash because for my usecase it was easy and means not having to add additional libraries or packages to build servers and dockerfiles. Something like Python compiled to C may be the best future option for ease of development and usage, feel free to raise issues over this with suggestions.
 
-Future functionality:
-Add ability to choose format of release header from yaml file settings instead of it being # Tag: {tag}	Packaged on: {date}
-Ability to override yaml file options with flags/parameters when executing
+# Future functionality:
+- Add ability to choose format of release header from yaml file settings instead of it being # Tag: {tag}	Packaged on: {date}
+- Ability to override yaml file options with flags/parameters when executing
