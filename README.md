@@ -1,7 +1,7 @@
 # Why
 The conventional changelog faces many issues for larger products or teams:
-- Git conflicts when adding to [unreleased] section of a standard changelog.
-- You manually need to edit the file and change [unreleased] to [{new release tag}].
+- Git conflicts when adding to a standard changelog many people are working on with diverging branches.
+- You manually need to edit the file and change [unreleased] to [{new release tag}] and or add to the new tag manually.
 
 # Functionality
 1. Instead of adding to your changelog directly when a ticket is in progress you should create a file named after the ticket under the changes directory, the path for which you set in the teamchangelog.yaml file.
