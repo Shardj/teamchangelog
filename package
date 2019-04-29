@@ -20,7 +20,7 @@ gitTag=false
 force=false
 libraryDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # directory the script is inside
 cd "$libraryDir"
-yamlfile="package.yaml"
+confFile="package.conf"
 
 while getopts "$OPTSTRING" opt; do
     case "$opt" in
@@ -41,32 +41,15 @@ while getopts "$OPTSTRING" opt; do
     esac
 done
 
-function parse_yaml {
-    local prefix=$2
-    local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
-    sed -ne "s|^\($s\):|\1|" \
-        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
-        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
-    awk -F$fs '{
-        indent = length($1)/2;
-        vname[indent] = $2;
-        for (i in vname) {if (i > indent) {delete vname[i]}}
-        if (length($3) > 0) {
-         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
-         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
-        }
-    }'
-}
-
 function prepend_text_to_file {
     echo -e "$1$(cat $2)" > $2
 }
 
-if [[ -f "$yamlfile" ]]; then
-    # takes values from yaml file and converts them into bash variables
-    eval $(parse_yaml "$yamlfile")
+if [[ -f "$confFile" ]]; then
+    # takes values from conf file and converts them into bash variables
+    source $confFile
 else
-    echo "$yamlfile not found"
+    echo "$confFile not found"
     exit 1
 fi
 
