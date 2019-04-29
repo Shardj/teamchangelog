@@ -7,19 +7,15 @@ Usage: [-hf] [-v <git tag>]
 
 Parameter details:
     -h display help and exit
-    -f force git tag creation
     -v git tag, checkout release tag specified
 EOF
 }
 
 # Initialise variables
-
 OPTIND=1 # Reset for previous uses of getops in shell
-OPTSTRING="fv:"
+OPTSTRING="hv:"
 gitTag=false
-force=false
-libraryDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # directory the script is inside
-cd "$libraryDir"
+cd "$( dirname "${BASH_SOURCE[0]}" )" # cd into directory the script is inside
 confFile="package.conf"
 
 while getopts "$OPTSTRING" opt; do
@@ -27,9 +23,6 @@ while getopts "$OPTSTRING" opt; do
     h)
         show_help
         exit 0
-        ;;
-    f)
-        force=true
         ;;
     v)
         gitTag=$OPTARG
@@ -41,6 +34,7 @@ while getopts "$OPTSTRING" opt; do
     esac
 done
 
+# Arg1 is the text, arg2 is the file path
 function prepend_text_to_file {
     echo -e "$1$(cat $2)" > $2
 }
@@ -54,22 +48,6 @@ else
 fi
 
 # Validation
-# we move into project file path for git commands
-cd "$project_file_path"
-
-if [[ ! "$gitTag" =~ $tag_validation_regex ]]; then
-    echo "Invalid tag supplied must match $tag_validation_regex"
-    exit 1
-fi
-
-# if tag already exists and we aren't going to force tag creation
-if git rev-parse "$gitTag" >/dev/null 2>&1 && [[ "$force" == false ]]; then
-    echo "tag already exists"
-    exit 1
-fi
-
-cd "$libraryDir"
-
 if [[ ! -f "$changelog_file_path" ]]; then
     echo "$changelog_file_path is not a file"
 fi
@@ -112,13 +90,3 @@ prepend_text_to_file "$newChange" "$changelog_file_path"
 # Remove files in $unreleased_changes_directory_path as they're now in the changelog
 echo "Removing files matching $unreleased_changes_directory_path*"
 rm -rf "$unreleased_changes_directory_path"*
-
-# Tag creation
-cd "$project_file_path"
-if [[ $force == true ]]; then
-    echo "Force creating tag $gitTag"
-    git tag -f "$gitTag"
-else
-    echo "Creating tag $gitTag"
-    git tag "$gitTag"
-fi
