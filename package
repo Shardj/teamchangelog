@@ -64,7 +64,7 @@ fi
 # Append tag and date to changelog
 echo "Adding to $changelog_file_path"
 
-newChange="\\\t<release>\n\t\t<meta>\n\t\t\t<tag>$gitTag</tag>\n\t\t\t<date>$(date)</date>\n\t\t</meta>\n"
+newChange="\\\t<release>\n\t\t<meta>\n\t\t\t<tag>$gitTag</tag>\n\t\t\t<date>$(date +"%y-%m-%d")</date>\n\t\t</meta>\n"
 
 # Iterate over files by globbing
 for filepath in "$unreleased_changes_directory_path"*; do
