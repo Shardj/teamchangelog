@@ -17,29 +17,10 @@ The conventional changelog faces many issues for larger products or teams:
 - The conf file must be in the same directory as the bash file.
 - This repo no longer automatically creates a git tag, it just handles the movement of files under changes/ to changelog
 
-# Examples
-### Live example:
+# Example
 I have included an example changelog, example changes directory, and example unreleased change (in the changes directory). If you clone this repo and run `teamchangelog/package -v 1.0` you'll be able to clearly see what's happening from `git diff` and `git status`.
 
-### Written example:
-Example changelog's current state:
-
-    # Tag: 14.4.0	Packaged on: Wed 24 Apr 10:16:03 BST 2019
-    TM-85 - fixed a bug
-	
-Imagine you have the change "foo bar" written in the ticket file "TM-86" in your changes directory. Running `./package -v 14.4.1` results in that ticket file being deleted and your example changelog now looking like:
-
-    # Tag: 14.4.1	Packaged on: Wed 24 Apr 12:35:10 BST 2019
-    TM-86 - foo bar
-	
-    # Tag: 14.4.0	Packaged on: Wed 24 Apr 10:16:03 BST 2019
-    TM-85 - fixed a bug
-	
 # Missing functionality
 If you have any suggestions or changes feel free to open issues or PR's.
 
 Currently this is written in bash because for my usecase it was easy and means not having to add additional libraries or packages to build servers and dockerfiles. Something like Python compiled to C may be the best future option for ease of development and usage, feel free to raise issues over this with suggestions.
-
-# Future functionality:
-- Add ability to choose format of release header from conf file settings instead of it being `# Tag: {tag}	Packaged on: {date}`.
-- Ability to override conf file options with flags/parameters when executing.

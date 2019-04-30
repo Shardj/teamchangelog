@@ -1,0 +1,18 @@
+<changelog>
+    <release>
+        <meta>
+            <tag>1.0</tag>
+            <date>2018-04-01</date>
+        </meta>
+        <change>PM-1234 - fixed a thing</change>
+        <change>PM-1235 - fixed other thing</change>
+    </release>
+    <release>
+        <meta>
+            <tag>0.5</tag>
+            <date>2018-03-01</date>
+        </meta>
+        <change>PM-1204 - fixed a thing</change>
+        <change>PM-1205 - fixed other thing</change>
+    </release>
+</changelog>
