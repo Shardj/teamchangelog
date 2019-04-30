@@ -64,16 +64,7 @@ fi
 # Append tag and date to changelog
 echo "Adding to $changelog_file_path"
 
-<release>
-    <meta>
-        <tag>1.0</tag>
-        <date>2018-04-01</date>
-    </meta>
-    <change>PM-1234 - fixed a thing</change>
-    <change>PM-1235 - fixed other thing</change>
-</release>
-
-newChange="<release>\n\t<meta>\n\t\t<tag>$gitTag</tag>\n\t\t<date>$(date)</date>\n\t</meta>\n"
+newChange="\\\t<release>\n\t\t<meta>\n\t\t\t<tag>$gitTag</tag>\n\t\t\t<date>$(date)</date>\n\t\t</meta>\n"
 
 # Iterate over files by globbing
 for filepath in "$unreleased_changes_directory_path"*; do
@@ -89,12 +80,12 @@ for filepath in "$unreleased_changes_directory_path"*; do
         # strips directory path prefix off of path to file to leave only the filepath
         trueFilename=${filepath#"$unreleased_changes_directory_path"}
         # add to newChange
-        newChange="\t<change>$newChange$trueFilename - $line</change>\n"
+        newChange="$newChange\t\t<change>$trueFilename - $line</change>\n"
     done < "$filepath"
 done
-newChange="$newChange</release>\n"
+newChange="$newChange\t</release>"
 
-sed  "/<changelog>/i $newChange" "$changelog_file_path" > "$changelog_file_path"
+sed -i "/<changelog>/a $newChange" "$changelog_file_path"
 
 # Remove files in $unreleased_changes_directory_path as they're now in the changelog
 echo "Removing files matching $unreleased_changes_directory_path*"
